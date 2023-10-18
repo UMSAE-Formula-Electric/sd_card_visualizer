@@ -1,0 +1,15 @@
+{
+  "name": "sd_card_visualizer",
+  "version": "1.0.0",
+  "description": "Visualizer for data written to the SD card",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
+  },
+  "author": "UMSAE",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^27.0.0"
+  }
+}
