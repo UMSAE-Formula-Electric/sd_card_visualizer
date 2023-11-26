@@ -27,10 +27,10 @@ function LineChart({data}) {
     const [xs, setXs] = useState(data);
 
     const [min, setMin] = useState(0);
-    const [max, setMax] = useState(100);
+    const [max, setMax] = useState(1);
 
     const [minValue, setMinValue] = useState(0);
-    const [maxValue, setMaxValue] = useState(30);
+    const [maxValue, setMaxValue] = useState(1);
 
     const svgRef = useRef();
 
@@ -43,11 +43,8 @@ function LineChart({data}) {
     //draws chart
     useEffect(() => {
 
-	//setMax(_ => Math.max(...[...xs.map(p => p['x']), 0]));
-	//setMin(_ => Math.min(...[...xs.map(p => p['x']), max]));
-
-	console.log("max: ", max, " maxValue: ", maxValue);
-	console.log("min: ", min, " minValue: ", minValue);
+	setMax(_ => Math.max(...[...xs.map(p => p['x']), 1]));
+	setMin(_ => Math.min(...[...xs.map(p => p['x']), 0]));
 
 	const svg =
 	      select(svgRef.current);
@@ -92,7 +89,7 @@ function LineChart({data}) {
     function updateGraph() {
 	const point = {
 	    x: time, // Math.random() * 200,
-	    y: Math.random() * 200,
+	    y: Math.random() * 100,
 	};
 	time++;
 
@@ -101,7 +98,9 @@ function LineChart({data}) {
 
     return (
 	<div>
-	    <svg ref={svgRef}/>
+	    <div style={{padding: "10px"}}>
+		<svg ref={svgRef}/>
+	    </div>
 	    {/*<button onClick={() => setXs(prevData => [...prevData, {x: Math.random() * 100, y: Math.random() * 100}])}>Update</button>*/}
 	    <button onClick={updateGraph}>Update</button>
 	    <MultiRangeSlider
