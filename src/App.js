@@ -124,7 +124,11 @@ function App() {
 			<button class="button slip-button">Slip</button>
 			<button class="button voltage-button">Voltage</button>
 		  </div>
-		  <div class="left-bar"></div>
+		  <div class="graph-area">
+			<div class="graph-holder">
+				<LineChart data={[]} class="line-chart"></LineChart>
+			</div>	
+		  </div>
 		  <div class="bottom-bar">
 			<div class="checkboxes">
 			  <input type="checkbox" id="rolling-box" class="rolling-box"></input>
