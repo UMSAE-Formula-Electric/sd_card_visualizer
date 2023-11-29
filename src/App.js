@@ -81,6 +81,8 @@ function LineChart({data}) {
 	    .attr("stroke", "#00bfa6");
     }, [xs, maxValue, minValue]);
 
+    const appendAmount = 10;
+
     function updateGraph() {
 	const point = {
 	    x: time, 
@@ -96,16 +98,16 @@ function LineChart({data}) {
 	    <div style={{padding: "10px"}}>
 		<svg ref={svgRef} style={{border: "1px solid black"}}/>
 	    </div>
-	    {/*<button onClick={() => setXs(prevData => [...prevData, {x: Math.random() * 100, y: Math.random() * 100}])}>Update</button>*/}
 	    <button onClick={updateGraph}>Update</button>
 	    <MultiRangeSlider
 		    min={min}
 		    max={max}
 		    step={1}
+		    ruler={false}
 		    minValue={minValue}
 		    maxValue={maxValue}
 		    onInput={(e) => {
-			    handleInput(e);
+			handleInput(e);
 		    }}
 	    />
 	</div>
