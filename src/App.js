@@ -25,6 +25,8 @@ function LineChart({data}) {
     const [minValue, setMinValue] = useState(0);
     const [maxValue, setMaxValue] = useState(1);
 
+    const [follow, setFollow] = useState(false);
+
     const svgRef = useRef();
 
 
@@ -36,21 +38,26 @@ function LineChart({data}) {
     //draws chart
     useEffect(() => {
 
+
 	setMax(_ => Math.max(...[...xs.map(p => p['x']), 1]));
 	setMin(_ => Math.min(...[...xs.map(p => p['x']), 0]));
+
+	if(follow) {
+	    setMaxValue(max);
+	}
+
 
 	// Remove points so that we only render the ones in view
 	const xsInView = xs.filter(p => {
 	    return p['x'] >= minValue && p['x'] <= maxValue;
 	});
 
-	const svg =
-	      select(svgRef.current);
+	const svg = select(svgRef.current);
 
 	//scales
 	const xScale = scaleLinear()
-	    .domain([0, xsInView.length - 1])
-	    .range([0, 300]);
+	    .domain([0, xsInView.length - 1]) // this allows values to fill graph (more values more spread out)
+	    .range([0, 1000]);
 
 	const yScale = scaleLinear()
 	      .domain([0, 100])
@@ -81,8 +88,7 @@ function LineChart({data}) {
 	    .attr("stroke", "#00bfa6");
     }, [xs, maxValue, minValue]);
 
-    const appendAmount = 10;
-
+    // Creates a new point on the graph and increments time
     function updateGraph() {
 	const point = {
 	    x: time, 
@@ -90,15 +96,16 @@ function LineChart({data}) {
 	};
 	time++;
 
-	setXs(prevData => [...prevData, point]);
+	setXs(prevData => [...prevData, point]); // append point to xs
     }
 
     return (
 	<div>
-	    <div style={{padding: "10px"}}>
-		<svg ref={svgRef} style={{border: "1px solid black"}}/>
+	    <div style={{padding: "5vw"}}>
+		<svg ref={svgRef} style={{border: "1px solid black", width: "100%"}}/>
 	    </div>
 	    <button onClick={updateGraph}>Update</button>
+	    <input type="checkbox" onClick={() => setFollow(!follow)}></input>
 	    <MultiRangeSlider
 		    min={min}
 		    max={max}
@@ -139,7 +146,6 @@ const THINGS = [
 function App() {
     return (
 	<>
-	    <div style={{background: "red"}}></div>
 	    <ThingSidebar things={THINGS}/>
 	    <LineChart data={[]}/>
 	</>
