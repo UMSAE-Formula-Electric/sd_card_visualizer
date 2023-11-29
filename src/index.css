@@ -11,3 +11,79 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+.grid {
+  display: grid;
+  grid-template-rows: repeat(8, 100px);
+  grid-template-columns: repeat(8, 1fr);
+  background: #D9D9D9;
+}
+
+.right-bar {
+  display: grid;
+  grid-template-rows: repeat(40, 1fr);
+  background-color: gray;
+  grid-row: 1 / -1;
+  row-gap: 10px;
+}
+.left-bar {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(20, 1fr);
+  background-color: #D9D9D9;
+  grid-row: 1 / 7;
+  grid-column: 1 / 8;
+}
+.start-button {
+  background-color: white;
+  grid-area: -2 / 3 / -1 / 4;
+}
+.bottom-bar {
+  background-color: #A5A5A5;
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: repeat(5, 1fr);
+  grid-area: 8 / 1 / -1 / 8;
+}
+
+.button {
+  background-color: white;
+  border-radius: 20px;
+  border-color: transparent;
+}
+.button:hover {
+  background-color: lightcoral;
+}
+.wheel-button {
+  grid-row: 2 / 5;
+}
+.slip-button {
+  grid-row: 5 / 8;
+}
+.voltage-button {
+  grid-row: 8 / 11;
+}
+
+.checkboxes {
+  background-color: gray;
+  display: grid;
+  align-items: center;
+  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-column: 1 / 2;
+}
+.rolling-box {
+  grid-column: 1 / 2;
+  margin-left: 50%;
+}
+.rolling-label {
+  font-size: 20px;
+  grid-column: 2 / -1;
+}
+.diff-box {
+  margin-left: 50%;
+}
+.diff-label {
+  font-size: 20px;
+  margin-right: 30px;
+  grid-column: 2 / -1;
+}

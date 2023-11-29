@@ -9,7 +9,6 @@ import {
   axisLeft,
 } from "d3";
 
-
 /*
 const DATA = [
   { x: 0, y: 10 },
@@ -117,65 +116,25 @@ function LineChart({data}) {
     );
 };
 
-function ThingSidebar({things}) {
-    const thingsBar = [];
-
-    things.forEach(thing => {
-	thingsBar.push(
-	    <button>{thing}</button>
-	);
-    });
-
-    return (
-	<div id="things">
-	    {thingsBar}
-	</div>
-    );
-}
-
-const THINGS = [
-    "Wheel Speed",
-    "Slip",
-    "Voltage"
-];
-
 function App() {
     return (
-	<>
-	    <div style={{background: "red"}}></div>
-	    <ThingSidebar things={THINGS}/>
-	    <LineChart data={DATA}/>
-	</>
-    );
-}
-
-
-export default App;
-
-/*
-function App() {
-const [minValue, set_minValue] = useState(25);
-const [maxValue, set_maxValue] = useState(75);
-const handleInput = (e) => {
-	set_minValue(e.minValue);
-	set_maxValue(e.maxValue);
-};
-
-return (
-	<div className="App">
-		<MultiRangeSlider
-			min={0}
-			max={100}
-			step={5}
-			minValue={minValue}
-			maxValue={maxValue}
-			onInput={(e) => {
-				handleInput(e);
-			}}
-		/>
-	</div>
-	);
+		<div class="grid">
+		  <div class="right-bar" id="right-bar">
+			<button class="button wheel-button">Wheel Speed</button>
+			<button class="button slip-button">Slip</button>
+			<button class="button voltage-button">Voltage</button>
+		  </div>
+		  <div class="left-bar"></div>
+		  <div class="bottom-bar">
+			<div class="checkboxes">
+			  <input type="checkbox" id="rolling-box" class="rolling-box"></input>
+			  <label for="rolling-box" class="rolling-label">Rolling Average</label>
+			  <input type="checkbox" id="diff-box" class="diff-box"></input>
+			  <label for="diff-box" class="diff-label">Difference</label>
+			</div>
+		  </div>  
+		</div>
+	  );
 }
 
 export default App;
-*/
