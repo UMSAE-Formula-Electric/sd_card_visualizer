@@ -33,10 +33,6 @@ code {
   grid-row: 1 / 7;
   grid-column: 1 / 8;
 }
-.start-button {
-  background-color: white;
-  grid-area: -2 / 3 / -1 / 4;
-}
 .bottom-bar {
   background-color: #A5A5A5;
   display: grid;
