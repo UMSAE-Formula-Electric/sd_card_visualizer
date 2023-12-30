@@ -9,28 +9,24 @@ import {
   axisLeft,
 } from "d3";
 
-
-// let time = 0;
-
 function LineChart({data}) {
 
     const width = 100;
     const height = 100;
     
-    const [xs, setXs] = useState(data);
+    const [xs, setXs] = useState(data); // the list of points to graph
 
-    const [min, setMin] = useState(0);
-    const [max, setMax] = useState(1);
+    const [min, setMin] = useState(0); // the smallest time value (x)
+    const [max, setMax] = useState(1); // the largest time value (x)
 
-    const [minValue, setMinValue] = useState(0);
-    const [maxValue, setMaxValue] = useState(1);
+    const [minValue, setMinValue] = useState(0); // the lower bound of our viewing window
+    const [maxValue, setMaxValue] = useState(1); // the upper bound of our viewing window
 
-    const [disabled, setDisabled] = useState(false);
+    const [disabled, setDisabled] = useState(false); // managing following state
 
     const [time, setTime] = useState(0);
 
-    const svgRef = useRef();
-
+    const svgRef = useRef(); // ref for the d3 graph
 
     const handleInput = (e) => {
 	setMinValue(e.minValue);
@@ -38,11 +34,16 @@ function LineChart({data}) {
 	    setMaxValue(e.maxValue);
 	}
 	else {
-	    setDisabled(false);
+	    // this means we're trying follow as time updates, so ignore input this time and try again next time
+	    setDisabled(false); 
 	}
     };
 
+    // Modifies the svgRef with the graph in view
     const drawChart = () => {
+
+	// Idk what alot of this does, it was copied from somewhere
+	
 	const xsInView = xs.filter(p => {
 	    return p['x'] >= minValue && p['x'] <= maxValue;
 	});
@@ -88,7 +89,9 @@ function LineChart({data}) {
 	    .attr("stroke", "#00bfa6");
     }
 
+    // Called everytime we change our time window or add new data points
     useEffect(() => {
+	// find the minimum and maximum time values (x)
 	xs.sort(p => p['x']);
 
 	let newMax = Math.max(...[...xs.map(p => p['x']), 1]); // max or 1
@@ -97,12 +100,13 @@ function LineChart({data}) {
 	setMax(newMax);
 	setMin(newMin);
 
+	// Should we be following?
 	if(maxValue == max) {
 	    setMaxValue(newMax);
 	    setDisabled(true);
 	}
 
-	drawChart();
+	drawChart(); // Redraw chart with new metrics
     }, [xs, minValue, maxValue]);
 
     // Creates a new point on the graph and increments time
