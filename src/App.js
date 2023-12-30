@@ -10,7 +10,7 @@ import {
 } from "d3";
 
 
-let time = 0;
+// let time = 0;
 
 function LineChart({data}) {
 
@@ -25,29 +25,24 @@ function LineChart({data}) {
     const [minValue, setMinValue] = useState(0);
     const [maxValue, setMaxValue] = useState(1);
 
-    const [follow, setFollow] = useState(false);
+    const [disabled, setDisabled] = useState(false);
+
+    const [time, setTime] = useState(0);
 
     const svgRef = useRef();
 
 
     const handleInput = (e) => {
 	setMinValue(e.minValue);
-	setMaxValue(e.maxValue);
+	if(!disabled) {
+	    setMaxValue(e.maxValue);
+	}
+	else {
+	    setDisabled(false);
+	}
     };
 
-    //draws chart
-    useEffect(() => {
-
-
-	setMax(_ => Math.max(...[...xs.map(p => p['x']), 1]));
-	setMin(_ => Math.min(...[...xs.map(p => p['x']), 0]));
-
-	if(follow) {
-	    setMaxValue(max);
-	}
-
-
-	// Remove points so that we only render the ones in view
+    const drawChart = () => {
 	const xsInView = xs.filter(p => {
 	    return p['x'] >= minValue && p['x'] <= maxValue;
 	});
@@ -65,17 +60,22 @@ function LineChart({data}) {
 
 	//axes
 	const xAxis = axisBottom(xScale).ticks(xs.length);
-	svg.select(".x-axis").style("transform", "translateY(100px)").call(xAxis);
+	svg
+	    .select(".x-axis")
+	    .style("transform", "translateY(100px)")
+	    .call(xAxis);
 
 	const yAxis = axisLeft(yScale);
-	svg.select(".y-axis").style("transform", "translateX(0px)").call(yAxis);
+	svg
+	    .select(".y-axis")
+	    .style("transform", "translateX(0px)")
+	    .call(yAxis);
 
 	//line generator
 	const myLine = line()
 	    .x((d, i) => xScale(i))
 	    .y((d) => yScale(d.y))
 	    .curve(curveCardinal);
-
 
 	//drawing the line
 	svg
@@ -86,7 +86,24 @@ function LineChart({data}) {
 	    .attr("d", myLine)
 	    .attr("fill", "none")
 	    .attr("stroke", "#00bfa6");
-    }, [xs, maxValue, minValue]);
+    }
+
+    useEffect(() => {
+	xs.sort(p => p['x']);
+
+	let newMax = Math.max(...[...xs.map(p => p['x']), 1]); // max or 1
+	let newMin = Math.min(...[...xs.map(p => p['x']), 0]); // min or 0
+
+	setMax(newMax);
+	setMin(newMin);
+
+	if(maxValue == max) {
+	    setMaxValue(newMax);
+	    setDisabled(true);
+	}
+
+	drawChart();
+    }, [xs, minValue, maxValue]);
 
     // Creates a new point on the graph and increments time
     function updateGraph() {
@@ -94,7 +111,8 @@ function LineChart({data}) {
 	    x: time, 
 	    y: Math.random() * 100,
 	};
-	time++;
+
+	setTime(time + 1); 
 
 	setXs(prevData => [...prevData, point]); // append point to xs
     }
@@ -104,19 +122,16 @@ function LineChart({data}) {
 	    <div style={{padding: "5vw"}}>
 		<svg ref={svgRef} style={{border: "1px solid black", width: "100%"}}/>
 	    </div>
-	    <button onClick={updateGraph}>Update</button>
-	    <input type="checkbox" onClick={() => setFollow(!follow)}></input>
 	    <MultiRangeSlider
-		    min={min}
-		    max={max}
+		    min={min} // current min value set by user
+		    max={max} // current max value set by user
 		    step={1}
 		    ruler={false}
-		    minValue={minValue}
-		    maxValue={maxValue}
-		    onInput={(e) => {
-			handleInput(e);
-		    }}
+		    minValue={minValue} // minimum value of the slider
+		    maxValue={maxValue} // maximum value of the slider
+		    onInput={(e) => handleInput(e)}
 	    />
+	    <button onClick={updateGraph}>Update</button>
 	</div>
     );
 };
