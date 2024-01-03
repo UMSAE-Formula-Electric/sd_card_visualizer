@@ -13,6 +13,8 @@ function LineChart({data}) {
 
     const width = 100;
     const height = 100;
+
+    const [timer, setTimer] = useState(new Date());
     
     const [xs, setXs] = useState(data); // the list of points to graph
 
@@ -91,6 +93,10 @@ function LineChart({data}) {
 
     // Called everytime we change our time window or add new data points
     useEffect(() => {
+	const interval = setInterval(() => {
+	    updateGraph();
+	}, 125);
+
 	// find the minimum and maximum time values (x)
 	xs.sort(p => p['x']);
 
@@ -107,6 +113,8 @@ function LineChart({data}) {
 	}
 
 	drawChart(); // Redraw chart with new metrics
+
+	return () => clearInterval(interval);
     }, [xs, minValue, maxValue]);
 
     // Creates a new point on the graph and increments time
