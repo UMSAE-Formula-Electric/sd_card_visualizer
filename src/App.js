@@ -95,7 +95,7 @@ function LineChart({data}) {
     useEffect(() => {
 	const interval = setInterval(() => {
 	    updateGraph();
-	}, 125);
+	}, 250);
 
 	// find the minimum and maximum time values (x)
 	xs.sort(p => p['x']);
