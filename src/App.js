@@ -137,6 +137,8 @@ function LineChart({data}) {
 	    <div style={{width: "100%", border: "1px solid black", overflowY: "scroll"}}>
 		<svg ref={svgRef} style={{width: "100%"}}/>
 	    </div>
+	    {/* This slider below will allow you to select the range of your time */}
+	    <input style={{width: "100%"}} type="range" min="1" max="100" value="50"/> 
 	    {/*
 	    <MultiRangeSlider
 		    min={min} // current min value set by user
