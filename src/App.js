@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-// import MultiRangeSlider from "multi-range-slider-react";
+
 import {
   select,
   line,
@@ -18,32 +18,11 @@ function LineChart({data}) {
     
     const [xs, setXs] = useState(data); // the list of points to graph
 
-    /*
-    const [min, setMin] = useState(0); // the smallest time value (x)
-    const [max, setMax] = useState(1); // the largest time value (x)
-
-    const [minValue, setMinValue] = useState(0); // the lower bound of our viewing window
-    const [maxValue, setMaxValue] = useState(1); // the upper bound of our viewing window
-
-    const [disabled, setDisabled] = useState(false); // managing following state
-    */
-
     const [time, setTime] = useState(0);
 
-    const svgRef = useRef(); // ref for the d3 graph
+    const [follow, setFollow] = useState(false);
 
-    /*
-    const handleInput = (e) => {
-	setMinValue(e.minValue);
-	if(!disabled) {
-	    setMaxValue(e.maxValue);
-	}
-	else {
-	    // this means we're trying follow as time updates, so ignore input this time and try again next time
-	    setDisabled(false); 
-	}
-    };
-    */
+    const svgRef = useRef(); // ref for the d3 graph
 
     // Modifies the svgRef with the graph in view
     const drawChart = () => {
@@ -104,27 +83,22 @@ function LineChart({data}) {
 	let newMax = Math.max(...[...xs.map(p => p['x']), 1]); // max or 1
 	let newMin = Math.min(...[...xs.map(p => p['x']), 0]); // min or 0
 
-	/*
-	setMax(newMax);
-	setMin(newMin);
-
-	// Should we be following?
-	if(maxValue == max) {
-	    setMaxValue(newMax);
-	    setDisabled(true);
-	}
-	*/
-
 	drawChart(); // Redraw chart with new metrics
 
+	// Snaps graph to newest value
+	if(follow) {
+	    const graphDiv = document.getElementById("graph");
+	    graphDiv.scrollLeft = graphDiv.scrollWidth;
+	}
+
 	return () => clearInterval(interval);
-    }, [xs]);
+    }, [xs, follow]);
 
     // Creates a new point on the graph and increments time
     function updateGraph() {
 	const point = {
 	    x: time, 
-	    y: Math.random() * 100,
+	    y: 10 * Math.cos(time)//Math.random() * 100,
 	};
 
 	setTime(time + 1); 
@@ -134,22 +108,14 @@ function LineChart({data}) {
 
     return (
 	<div>
-	    <div style={{width: "100%", border: "1px solid black", overflowY: "scroll"}}>
+	    <div style={{width: "100%", border: "1px solid black", overflowY: "scroll"}} id="graph">
 		<svg ref={svgRef} style={{width: "100%"}}/>
 	    </div>
 	    {/* This slider below will allow you to select the range of your time */}
-	    <input style={{width: "100%"}} type="range" min="1" max="100" value="50"/> 
-	    {/*
-	    <MultiRangeSlider
-		    min={min} // current min value set by user
-		    max={max} // current max value set by user
-		    step={1}
-		    ruler={false}
-		    minValue={minValue} // minimum value of the slider
-		    maxValue={maxValue} // maximum value of the slider
-		    onInput={(e) => handleInput(e)}
-	    />
-	    */}
+	    <div sytyle={{width: "100%"}}>
+		<input style={{width: "95%", float: "left"}} type="range" min="1" max="100" value="100"/> 
+		<input type="checkbox" value="Follow?" onClick={() => setFollow(!follow)}></input>
+	    </div>
 	    <button onClick={updateGraph}>Update</button>
 	</div>
     );
