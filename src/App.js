@@ -17,10 +17,13 @@ function LineChart({data}) {
     const [timer, setTimer] = useState(new Date());
     
     const [xs, setXs] = useState(data); // the list of points to graph
+    const [ys, setYs] = useState(data); // the list of points to graph
 
     const [time, setTime] = useState(0);
 
     const [follow, setFollow] = useState(false);
+
+    const [sliderValue, setSliderValue] = useState(1);
 
     const svgRef = useRef(); // ref for the d3 graph
 
@@ -31,10 +34,12 @@ function LineChart({data}) {
 	const svg = select(svgRef.current);
 
 	//scales
+
+	const xsInView = xs.length * (sliderValue / 100);
+
 	const xScale = scaleLinear()
-	    //.domain([0, xs.length - 1]) // this allows values to fill graph (more values more spread out)
-	    //.domain([0, xs.length - 1])
-	    //.range([0, 1000]);
+	      .domain([0, xsInView]) // this allows values to fill graph (more values more spread out)
+	      .range([0, 250]);
 
 	const yScale = scaleLinear()
 	      .domain([0, 100])
@@ -77,12 +82,6 @@ function LineChart({data}) {
 	    updateGraph();
 	}, 12);
 
-	// find the minimum and maximum time values (x)
-	xs.sort(p => p['x']);
-
-	let newMax = Math.max(...[...xs.map(p => p['x']), 1]); // max or 1
-	let newMin = Math.min(...[...xs.map(p => p['x']), 0]); // min or 0
-
 	drawChart(); // Redraw chart with new metrics
 
 	// Snaps graph to newest value
@@ -98,7 +97,8 @@ function LineChart({data}) {
     function updateGraph() {
 	const point = {
 	    x: time, 
-	    y: 10 * Math.cos(time)//Math.random() * 100,
+	    y: Math.random() * 100,
+	    //y: 10 * Math.cos(time)//Math.random() * 100,
 	};
 
 	setTime(time + 1); 
@@ -113,8 +113,13 @@ function LineChart({data}) {
 	    </div>
 	    {/* This slider below will allow you to select the range of your time */}
 	    <div sytyle={{width: "100%"}}>
-		<input style={{width: "95%", float: "left"}} type="range" min="1" max="100" value="100"/> 
-		<input type="checkbox" value="Follow?" onClick={() => setFollow(!follow)}></input>
+		<input style={{width: "95%", float: "left"}}
+		       type="range"
+		       min="1"
+		       max="100"
+		       value={sliderValue}
+		       onChange={(event) => setSliderValue(event.target.value)}/> 
+		<input type="checkbox" onClick={() => setFollow(!follow)}></input>
 	    </div>
 	    <button onClick={updateGraph}>Update</button>
 	</div>
