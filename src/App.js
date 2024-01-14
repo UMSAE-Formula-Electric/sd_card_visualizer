@@ -39,7 +39,7 @@ function LineChart({data}) {
 
 	const xScale = scaleLinear()
 	      .domain([0, xsInView]) // this allows values to fill graph (more values more spread out)
-	      .range([0, 250]);
+	      .range([0, time]);
 
 	const yScale = scaleLinear()
 	      .domain([0, 100])
@@ -114,6 +114,7 @@ function LineChart({data}) {
 	    {/* This slider below will allow you to select the range of your time */}
 	    <div sytyle={{width: "100%"}}>
 		<input style={{width: "95%", float: "left"}}
+		       id="slider"
 		       type="range"
 		       min="1"
 		       max="100"
@@ -139,8 +140,7 @@ function ThingSidebar({things}) {
 	<div id="things">
 	    {thingsBar}
 	</div>
-    );
-}
+    );}
 
 const THINGS = [
     "Wheel Speed",
