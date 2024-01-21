@@ -7,6 +7,7 @@ import {
   scaleLinear,
   axisBottom,
   axisLeft,
+  polygonArea,
 } from "d3";
 
 /*
@@ -24,6 +25,7 @@ let time = 0;
 
 function LineChart({data}) {
     const [xs, setXs] = useState(data);
+    const [ys, setYs] = useState(data);
 
     const [min, setMin] = useState(0);
     const [max, setMax] = useState(1);
@@ -32,7 +34,6 @@ function LineChart({data}) {
     const [maxValue, setMaxValue] = useState(1);
 
     const svgRef = useRef();
-
 
     const handleInput = (e) => {
 	    setMinValue(e.minValue);
@@ -73,10 +74,13 @@ function LineChart({data}) {
 	    return p['x'] >= minValue && p['x'] <= maxValue;
 	});
 
+	const ysInView = ys.filter(p => {
+	    return p['x'] >= minValue && p['x'] <= maxValue;
+	});
 	//drawing the line
 	svg
 	    .selectAll(".line")
-	    .data([xsInView])
+	    .data([xsInView, ysInView])
 	    //.data([xs])
 	    .join("path")
 	    .attr("class", "line")
@@ -84,6 +88,16 @@ function LineChart({data}) {
 	    .attr("fill", "none")
 	    .attr("stroke", "#00bfa6");
     }, [xs, maxValue, minValue]);
+
+	function updateGraph2() {
+		const point = {
+			x: time, // Math.random() * 200,
+			y: Math.random() * 100,
+		};
+		time++;
+
+	setYs(prevData => [...prevData, point]);
+	}
 
     function updateGraph() {
 	const point = {
@@ -102,6 +116,7 @@ function LineChart({data}) {
 	    </div>
 	    {/*<button onClick={() => setXs(prevData => [...prevData, {x: Math.random() * 100, y: Math.random() * 100}])}>Update</button>*/}
 	    <button onClick={updateGraph}>Update</button>
+	    <button onClick={updateGraph2}>Update2</button>
 	    <MultiRangeSlider
 		    min={min}
 		    max={max}
