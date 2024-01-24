@@ -96,11 +96,13 @@ function LineChart({data}) {
 	const chartWidth = document.getElementById("graph").scrollWidth;
 	const xsInView = xs.length * (sliderValue / 100);
 
-	const xScale = d3.scaleLinear();
+	const xScale = d3.scaleLinear()
+		.domain([0, 1000])
+		.range([0, 1000 / sliderValue])
+	    //   .range([0, sliderValue]);
 	      //.domain([0, chartWidth])
 	      //.range([0, chartWidth / (sliderValue / 100)]);
 	      //.domain([Math.min(...xs.map((p) => p.x)), Math.max(...xs.map((p) => p.x))])
-	      //.range([0, xsInView]);
 
 	const yScale = d3.scaleLinear();
 	    //.domain([0, time])
@@ -118,7 +120,7 @@ function LineChart({data}) {
 	*/
 
 	//axes
-	const xAxis = d3.axisBottom(xScale).ticks(xs.length);
+	const xAxis = d3.axisBottom(xScale).ticks(10);
 	svg
 	    .select(".x-axis")
 	    .style("transform", "translateY(100px)")
@@ -134,14 +136,17 @@ function LineChart({data}) {
 	const myLine = d3.line()
 	    .x((d, i) => xScale(i))
 	    .y((d) => yScale(d.y))
-	    .curve(d3.curveCardinal);
-
+	    // .curve(d3.curveCardinal);
+		
+	// const xAxis = d3.axisBottom().scale(100);
 	//drawing the line
 	svg
-	    .style("width", xs.length + "px")
-	    .call(d3.zoom().on("zoom", (event) => {   // <-- `event` argument
-		svg.attr("transform", event.transform); // <-- use `event` here
-	    }))
+	    // .style("width", xs.length + "px")
+		.style("width", "700px")
+	    // .call(d3.zoom().on("zoom", (event) => {   // <-- `event` argument
+		// svg.attr("transform", event.transform); // <-- use `event` here
+	    // }))
+		.call(xAxis)
 	    .selectAll(".line")
 	    .data([xs])
 	    .join("path")
@@ -155,7 +160,7 @@ function LineChart({data}) {
     useEffect(() => {
 	const interval = setInterval(() => {
 	    updateGraph();
-	}, 10);
+	}, 100);
 
 	//drawChart(xs[xs.length - 1]); // Redraw chart with new metrics
 	//drawChart2(xs);
@@ -174,7 +179,8 @@ function LineChart({data}) {
     function updateGraph() {
 	const point = {
 	    x: time, 
-	    y: Math.random() * 100,
+		y: time,
+	    // y: Math.random() * 100,
 	    //y: 10 * Math.cos(time)
 	};
 
