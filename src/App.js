@@ -16,8 +16,8 @@ function LineChart({data}) {
 
     const [timer, setTimer] = useState(new Date());
     
-    const [xs, setXs] = useState(data); // the list of points to graph
-    const [ys, setYs] = useState(data); // the list of points to graph
+    //const [xs, setXs] = useState(data); // the list of points to graph
+    const [xs, setXs] = useState(generateRandomPoints(100));
 
     const [time, setTime] = useState(0);
 
@@ -27,23 +27,44 @@ function LineChart({data}) {
 
     const svgRef = useRef(); // ref for the d3 graph
 
+    // x-domain: [0, xMax]
+    // x-range : [0, 1]
+
+    // 100% View -> x-range [0, div-size]
+    //  50% View -> x-range [0, 2 * div-size]
+
+
+    // 100% shows 100% of points within graph-div
+    //  50% shows  50% of points within graph-div
+
     // Modifies the svgRef with the graph in view
     const drawChart = () => {
+
+	const graphContainerWidth =
+	      document
+	      .getElementById("graph-container")
+	      .getBoundingClientRect()
+	      .width;
 
 	// Idk what alot of this does, it was copied from somewhere
 	const svg = select(svgRef.current);
 
 	//scales
 
-	const xsInView = xs.length * (sliderValue / 100);
+	//const xsInView = xs.length * (sliderValue / 100);
+
+	const xMax = Math.max(...xs.map((p) => p.x));
 
 	const xScale = scaleLinear()
-	      .domain([0, xsInView]) // this allows values to fill graph (more values more spread out)
-	      .range([0, time]);
+	      //.domain([0, xMax])
+	      //.range([0, (100 / sliderValue) * width]);
+	      .domain([0, sliderValue]) // this allows values to fill graph (more values more spread out)
+	      .range([0, 10]);
+	      //.range([0, time]);
 
-	const yScale = scaleLinear()
-	      .domain([0, 100])
-	      .range([100, 0]);
+	const yScale = scaleLinear();
+	      //.domain([0, 100])
+	      //.range([100, 0]);
 
 	//axes
 	const xAxis = axisBottom(xScale).ticks(xs.length);
@@ -62,7 +83,7 @@ function LineChart({data}) {
 	const myLine = line()
 	    .x((d, i) => xScale(i))
 	    .y((d) => yScale(d.y))
-	    .curve(curveCardinal);
+	    //.curve(curveCardinal);
 
 	//drawing the line
 	svg
@@ -78,9 +99,11 @@ function LineChart({data}) {
 
     // Called everytime we change our time window or add new data points
     useEffect(() => {
+	/*
 	const interval = setInterval(() => {
 	    updateGraph();
 	}, 12);
+	*/
 
 	drawChart(); // Redraw chart with new metrics
 
@@ -90,15 +113,15 @@ function LineChart({data}) {
 	    graphDiv.scrollLeft = graphDiv.scrollWidth;
 	}
 
-	return () => clearInterval(interval);
-    }, [xs, follow]);
+	//return () => clearInterval(interval);
+    }, [xs, follow, sliderValue]);
 
     // Creates a new point on the graph and increments time
     function updateGraph() {
 	const point = {
 	    x: time, 
-	    y: Math.random() * 100,
-	    //y: 10 * Math.cos(time)//Math.random() * 100,
+	    y: time % 2 == 0 ? 0 : 100,
+	    //y: Math.random() * 100,
 	};
 
 	setTime(time + 1); 
@@ -106,8 +129,20 @@ function LineChart({data}) {
 	setXs(prevData => [...prevData, point]); // append point to xs
     }
 
+    function generateRandomPoints(n) {
+	const arr = [];
+
+	for(let i = 0; i < n; i++) {
+	    arr.push({ x: i, 
+		       y: Math.random() * 100 });
+		       //y: i % 2 == 0 ? 0 : 100 });
+	}
+
+	return arr;
+    }
+
     return (
-	<div>
+	<div id="graph-container">
 	    <div style={{width: "100%", border: "1px solid black", overflowY: "scroll"}} id="graph">
 		<svg ref={svgRef} style={{width: "100%"}}/>
 	    </div>
