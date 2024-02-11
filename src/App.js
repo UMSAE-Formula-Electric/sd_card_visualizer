@@ -15,7 +15,7 @@ function LineChart({}) {
     const [time, setTime] = useState(0);
     const [data, setData] = useState([]);
     const [follow, setFollow] = useState(false);
-    const [sliderValue, setSliderValue] = useState(1);
+    const [sliderValue, setSliderValue] = useState(50);
     const svgRef = useRef(); // ref for the d3 graph
 
     useEffect(() => {
@@ -23,11 +23,16 @@ function LineChart({}) {
 	    updateGraph();
 	}, 120);
 
-	const width  = 100;
+	const graphContainerWidth = document.getElementById("graph").offsetWidth;
+
+	//const width  = 100; 
+	//const width = time;
+	const width = time * (sliderValue / 100);
 	const height = 100;
 
 	const svg = select(svgRef.current)
-	    .attr("width", time)
+	    //.attr("width", time)
+	    .attr("width", width)
 	    .attr("height", height)
 	    .style("overflow", "visible")
 	    .style("background", "#c5f6fa");
@@ -59,8 +64,15 @@ function LineChart({}) {
 	      .domain([0, height])
 	      .range([height, 0]);
 
+	// slider = 100%
+	// xMin = 0, xMax = time
+	// slider = 50%
+	// xMin = 0, xMax = 2 * time
+
+	// x * (slider / sliderMax)
+
 	const generateScaledLine = line()
-	      .x((d) => d.x * (100 / sliderValue)) 
+	      .x((d) => d.x * (sliderValue / 100)) // * (100 / sliderValue)) 
 	      .y((d) => d.y);
 	      //.curve(curveCardinal);
 
@@ -89,7 +101,7 @@ function LineChart({}) {
 
     return (
 	<div id="graph-container">
-	    <div style={{width: "100wv", overflowY: "scroll"}}id="graph">
+	    <div style={{width: "100vw", overflowY: "scroll"}}id="graph">
 		<svg ref={svgRef}/>
 	    </div>
 	    {/* This slider below will allow you to select the range of your time */}
