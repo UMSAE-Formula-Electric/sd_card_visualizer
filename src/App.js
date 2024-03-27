@@ -46,7 +46,7 @@ function LineChart({data}) {
 	}
     };
 
-    const updateLine = (input, color, yRange,translation,myLine) => {
+    const setSvg = (input,inputSpeed) => {
 	/* Selects the svg we are using and 
 	* filters the input based on the min and max value
 	*/
@@ -58,14 +58,14 @@ function LineChart({data}) {
 			return p['x'] >= minValue && p['x'] <= maxValue;
 		})
 	
-		/* const xsSpeedInView = inputSpeed.filter(p => {
+		const xsSpeedInView = inputSpeed.filter(p => {
 			return p['x'] >= minValue && p['x'] <= maxValue;
-		}); */
+		});
 		
-		createScale(svg, xsInView, color, yRange, translation, myLine)
+		createScale(svg, xsInView, xsSpeedInView)
 			
 	}
-	const createScale = (svg, xsInView, color, yRange, translation, myLine) => {	
+	const createScale = (svg, xsInView, xsSpeedInView) => {	
 		/* creates the scale of the line and
 		*  creates the scale of the x and y axis
 		*/
@@ -74,46 +74,43 @@ function LineChart({data}) {
 			.range([0, 1000]);
 
 		const yScale = scaleLinear()
-			.domain([0, yRange])
+			.domain([0, 150])
 			.range([150, 0]);
 
-/* 		const yScale2 = scaleLinear()
+		const yScale2 = scaleLinear()
 			.domain([0, 50])
-			.range([150, 0]); */
+			.range([150, 0]);
 
-		//const myLine = new line()
-		myLine = 
+		const myLine = new line()
 			.x((d, i) => xScale(i))
 			.y((d) => yScale(d.y))
 			.curve(curveCardinal);
 
-/* 		const myLine2 = new line()
+		const myLine2 = new line()
 			.x((d, i) => xScale(i))
 			.y((d) => yScale2(d.y))
-			.curve(curveCardinal); */
+			.curve(curveCardinal);
 		
-		//var combine = [xsInView, xsSpeedInView]
-		//var media = combine.map(d => d.key)
-		//var color = scaleOrdinal().domain(media).range(["red", "blue"]);
+		var combine = [xsInView, xsSpeedInView]
+		var media = combine.map(d => d.key)
+		var color = scaleOrdinal().domain(media).range(["red", "blue"]);
 
 
 		//axes
 		const xAxis = axisBottom(xScale).ticks(xs.length).tickFormat(i => i + 1);
 		//svg.call(xAxis).attr('transform',`translate(0, ${xs.length -1})`); DON'T NEED X AXIS
 
-		const yAxis = axisLeft(yScale)//.tickValues(range(0,height + 1,10)).tickPadding(10).tickSizeOuter(0);
-		//const yAxisSpeed = axisLeft(yScale2)//.tickValues(range(0,150 + 1,10))
-		translation = String(translation)
+		const yAxis = axisLeft(yScale).tickValues(range(0,height + 1,10)).tickPadding(10).tickSizeOuter(0);
+		const yAxisSpeed = axisLeft(yScale2)//.tickValues(range(0,150 + 1,10))
 		svg.append("g")
-			.attr("transform", "translate(translation,0)")
 			.attr("class", "y axis")
 			.call(yAxis)
-			.style("stroke", color);
-	/* 	svg.append("g")
+			.style("stroke", "blue");
+		svg.append("g")
 			.attr("transform", "translate(-40,0)")
 			.attr("class", "y axis")
 			.call(yAxisSpeed)
-			.style("stroke", "red"); */
+			.style("stroke", "red");
 		
 		//drawing the line
 		svg
@@ -128,10 +125,10 @@ function LineChart({data}) {
 			.attr("class", "myline")
 			.attr("d", myLine)
 			.attr("fill", "none")
-			.attr("stroke", color)
+			.attr("stroke", d => color(d))
 			.attr("stroke-width", 1.5);
 			//.remove("path");	
-/* 			svg
+			svg
 				.selectAll(".myline2")
 				.data([xsSpeedInView])
 				.join("path")
@@ -139,7 +136,7 @@ function LineChart({data}) {
 				.attr("d", myLine2)
 				.attr("fill", "none")
 				.attr("stroke", d => color(d))
-				.attr("stroke-width", 1.5); */
+				.attr("stroke-width", 1.5);
 
 		
 			
@@ -147,29 +144,27 @@ function LineChart({data}) {
 
     // Called everytime we change our time window or add new data points
     useEffect(() => {
-		const interval = setInterval(() => {
-			updateGraph();
-		}, 2000);
+	const interval = setInterval(() => {
+	    updateGraph();
+	}, 2000);
 
-		// find the minimum and maximum time values (x)
-		xs.sort(p => p['x']);
+	// find the minimum and maximum time values (x)
+	xs.sort(p => p['x']);
 
-		let newMax = Math.max(...[...xs.map(p => p['x']), 1]); // max or 1
-		let newMin = Math.min(...[...xs.map(p => p['x']), 0]); // min or 0
+	let newMax = Math.max(...[...xs.map(p => p['x']), 1]); // max or 1
+	let newMin = Math.min(...[...xs.map(p => p['x']), 0]); // min or 0
 
-		setMax(newMax);
-		setMin(newMin);
+	setMax(newMax);
+	setMin(newMin);
 
-		// Should we be following?
-		if(maxValue == max) {
-			setMaxValue(newMax);
-			setDisabled(true);
-		}
-		myLine = new line()
-		myLine2 = new line()
-		updateLine(xs, "blue", 150, 0, myLine); // Redraw chart with new metrics
-		updateLine(xsSpeed, "red", 50, -40, myLine2); // Redraw chart with new metrics
-		return () => clearInterval(interval);
+	// Should we be following?
+	if(maxValue == max) {
+	    setMaxValue(newMax);
+	    setDisabled(true);
+	}
+	setSvg(xs, xsSpeed); // Redraw chart with new metrics
+	//setSvg(xsSpeed, "red");
+	return () => clearInterval(interval);
     }, [xs, minValue, maxValue]);
 
     // Creates a new point on the graph and increments time
